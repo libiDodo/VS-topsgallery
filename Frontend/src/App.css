@@ -1,0 +1,447 @@
+                                        /* Общая таблица стилей */
+/* src/App.css */
+
+/* Общие настройки */
+.App {
+    text-align: center;     /* выравнивание текста по центру (left, right, justify) */
+    padding: 20px;          /* внутренний отступ со всех сторон (можно задавать по отдельности: padding-top, padding-right и т.д.) */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;     /* шрифт с запасными вариантами */
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+                                        /* Основная панель */
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+.main-panel {
+    display: flex;
+}
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Панель фильтров */
+
+.filter-panel {
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.filter-panel input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+/* Скрываем нативный чекбокс */
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Контейнер для каждого чекбокса */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 5px;
+    user-select: none;
+}
+
+/* Кастомный индикатор */
+.checkbox-custom {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #555;
+    border-radius: 4px;
+    margin-right: 8px;
+    background-color: #fff;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Стиль при наведении на индикатор */
+.checkbox-input:hover + .checkbox-custom {
+    border-color: #000;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
+
+/* Галочка (символ ✓) для отмеченного состояния */
+.checkbox-input:checked + .checkbox-custom::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: #000;        /* цвет галочки – чёрный, но для тёмных фонов можно менять */
+    text-shadow: 0 0 2px white;     /* для контраста на тёмном фоне */
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Панель поиска */
+
+.search-panel {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    flex: 0 1 auto;      /* запрещаем растягивание */
+    width: 100%;         /* занимает доступное пространство до max-width */
+    max-width: 300px;    /* желаемая ширина (подберите под ваш макет) */
+}
+
+.search-input {
+    padding: 5px;
+    margin-right: 5px;
+    flex: 1;
+}
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Заголовок сайта */
+
+h1 {
+    color: #333;                          /* тёмно-серый цвет текста (можно любой hex, rgb, или ключевое слово) */
+    margin-bottom: 30px;                  /* отступ снизу (можно в px, em, rem) */
+    font-weight: 400;                     /* тонкое начертание (нормальное 400, жирное 700) */
+    letter-spacing: 2px;                  /* межбуквенный интервал (можно 0, 2px, -0.5px) */
+    text-align: right;
+    flex: 1;
+}
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Кнопка "Случайно" */
+
+.random-button {
+    padding: 4px 8px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.random-button:hover {
+    background-color: #2980b9;
+}
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+                                        /* Основная таблица */
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* Контейнер для горизонтального скролла на маленьких экранах */
+.table-container {
+    overflow-x: visible;                      /* горизонтальный скролл при необходимости (visible, hidden, scroll) */
+    margin: 0 auto;                           /* центрирование блока (верх/низ 0, auto по бокам) */
+    max-width: 100%;                          /* ширина не больше ширины родителя (можно задать фиксированную, например 1200px) */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);    /* тень: смещение x, y, размытие, цвет (можно убрать или изменить) */
+    border-radius: 8px;                       /* скругление углов (можно 0 для прямых, 50% для круга) */
+}
+
+/* Сама таблица */
+.tops-table {
+    width: 100%;                          /* занимает всю ширину контейнера (можно фиксированную, например 800px) */
+    border-collapse: collapse;            /* убирает двойные границы между ячейками (separate — с расстоянием) */
+    background-color: white;              /* фон таблицы (можно любой цвет) */
+    font-size: 14px;                      /* размер шрифта (можно rem, em) */
+    min-width: 800px;                     /* минимальная ширина, чтобы таблица не сжималась слишком сильно */
+}
+
+/* Заголовки */
+.tops-table th {
+    background-color: #2c3e50;            /* тёмно-синий фон (можно любой) */
+    color: white;                         /* цвет текста */
+    font-weight: 600;                     /* полужирный (400 — нормальный, 700 — жирный) */
+    padding: 12px 15px;                   /* внутренние отступы: сверху/снизу 12px, слева/справа 15px */
+    text-align: center;                   /* выравнивание текста по левому краю (center, right) */
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    white-space: nowrap;                  /* запрет переноса текста (normal — переносить) */
+}
+
+/* Ячейки */
+.tops-table td {
+    padding: 10px 15px;                           /* отступы внутри ячеек */
+    border: 1px solid #cbdced;                    /* нижняя граница: толщина, стиль, цвет (можно dashed, dotted) */
+    text-align: left;                             /* выравнивание по левому краю */
+    vertical-align: middle;                       /* выравнивание по верхнему краю (middle, bottom) */
+}
+
+/* Чередование фона строк */
+.tops-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;                /* очень светлый серый для чётных строк (можно любой цвет) */
+}
+
+/* Подсветка строки при наведении */
+.tops-table tbody tr:hover {
+    background-color: #e9ecef;                /* более тёмный серый при наведении */
+    transition: background-color 0.3s ease;   /* плавное изменение цвета за 0.2 секунды (можно linear, или убрать) */
+}
+
+/* Стиль для ссылок (если они есть в ячейках) */
+.tops-table a {
+    color: #3498db;                           /* синий цвет ссылок */
+    text-decoration: none;                    /* убирает подчёркивание (underline — добавить) */
+}
+
+.tops-table a:hover {
+    text-decoration: underline;               /* подчёркивание при наведении */
+}
+
+/* Обработка длинного текста в ячейках */
+.tops-table td {
+    max-width: 250px;         /* максимальная ширина ячейки (можно больше или меньше) */
+    word-wrap: break-word;    /* разрешает перенос длинных слов (normal — без переноса) */
+    white-space: normal;      /* обычный перенос текста (nowrap — запретить перенос) */
+}
+
+/* Параметры подзаголовков */
+.section-header td {
+    text-align: center;
+    font-weight: 700;
+    background-color: #e0ebfe;
+    padding: 12px;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Параметры отдельных столбцов */
+
+/* Первый столбец (Качество) */
+.tops-table td:nth-child(1) {
+    text-align: center;
+}
+
+/* Второй столбец (Название) */
+.tops-table td:nth-child(2) {
+    text-align: left;
+    min-width: 200px;
+}
+
+/* Третий столбец (Координаты) */
+.tops-table td:nth-child(3) {
+    text-align: center;
+}
+
+/* Четвёртый столбец (Описание) */
+.tops-table td:nth-child(4) {
+    text-align: left;
+}
+
+/* Пятый столбец (Авторы) */
+.tops-table td:nth-child(5) {
+    text-align: center;
+    min-width: 350px;
+}
+
+/* Шестой столбец (Скриншоты) */
+.tops-table td:nth-child(6) {
+    text-align: center;
+    min-width: 200px;
+}
+
+/* Седьмой столбец (Дата нахождения) */
+.tops-table td:nth-child(7) {
+    text-align: center;
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+                                        /* Панель скриншотов */
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+/* Кнопка галереи */
+.gallery-button {
+    background: none;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #3498db;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.gallery-button:hover {
+    background: #3498db;
+    color: white;
+}
+
+/* Модальное окно */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
+}
+
+.modal-close:hover {
+    color: #000;
+}
+
+.modal-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-thumb {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    cursor: pointer;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+.modal-thumb:hover {
+    border-color: #3498db;
+}
+
+.modal-title {
+    margin: 0 0 15px 0;
+    padding-right: 30px;        /* чтобы не налезало на крестик */
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+    word-break: break-word;
+}
+
+.highlighted-row {
+    outline: 2px solid #3498db;      /* синяя рамка вокруг строки */
+    outline-offset: -2px;             /* чтобы рамка не выходила за границы */
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Полноэкранный просмотр сриншотов */
+
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.fullscreen-content {
+    position: relative;
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+.fullscreen-image {
+    max-width: 100%;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.fullscreen-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 36px;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.fullscreen-close:hover {
+    color: #ccc;
+}
+
+.fullscreen-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    font-size: 48px;
+    cursor: pointer;
+    padding: 0 15px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.fullscreen-nav:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.fullscreen-prev {
+    left: -60px;
+}
+
+.fullscreen-next {
+    right: -60px;
+}
+
+.fullscreen-counter {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 16px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Адаптация для мобильных устройств */
+@media (max-width: 768px) {
+    .fullscreen-prev {
+        left: 10px;
+    }
+    .fullscreen-next {
+        right: 10px;
+    }
+    .fullscreen-nav {
+        font-size: 36px;
+        padding: 0 10px;
+    }
+    .fullscreen-close {
+        top: 10px;
+        right: 10px;
+    }
+    .fullscreen-counter {
+        bottom: 10px;
+    }
+}
+
+
+
+
