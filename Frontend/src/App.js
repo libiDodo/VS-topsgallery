@@ -47,6 +47,21 @@ function App() {
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+    /* Функция получения имён файлов */
+    const getFileNameFromUrl = (url) => {
+        try {
+            // Удаляем query-параметры (после ?)
+            const withoutQuery = url.split('?')[0];
+            // Берём последнюю часть после последнего слеша
+            const fileName = withoutQuery.split('/').pop();
+            return fileName;
+        } catch {
+            return url; // если не удалось распарсить, вернуть всю строку
+        }
+    };
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
     /* Панель скриншотов */
 
     const [lastOpenedRow, setLastOpenedRow] = useState(null);       //переменная для отслеживания последней открытой строки(для выделения)
@@ -58,8 +73,16 @@ function App() {
     const openGallery = (placeName, coords) => {
         const images = galleries[placeName];        //сохраняем изображения для данной строки
         if (images && images.length > 0) {      //если изображения есть...
+
+            /* Сортируем изображения по имени */
+            const sorted = [...images].sort((a, b) => {
+                const nameA = getFileNameFromUrl(a);
+                const nameB = getFileNameFromUrl(b);
+                return nameA.localeCompare(nameB, undefined, { numeric: true });
+            });
+
             setCurrentPlace({ name: placeName, coords: coords || '' });     //передаем заголовку информацию о строке
-            setModalImages(images);     //сохраняем изображения для отображения
+            setModalImages(sorted);     //сохраняем изображения для отображения
             setIsModalOpen(true);       //окно теперь открыто
             setLastOpenedRow(placeName); // запоминаем название открытой строки
         }
