@@ -71,13 +71,8 @@ function App() {
     /* Функция оптимизации url для миниатюр */
     const getThumbUrl = (originalUrl) => {
 
-        if (originalUrl.includes('yandex')) {       //если ссылка с яндекса оставляем ее как есть
-            return originalUrl;
-        }
-        else {
             // параметры для миниатюр: ширина 150, высота 150, обрезка, автоформат, автокачество
             return originalUrl.replace('/upload/', '/upload/w_150,h_150,c_fill,q_auto,f_auto/');
-        }
     };
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -149,12 +144,7 @@ function App() {
     /* Оптимизируем url */
     const getFullscreenUrl = (originalUrl) => {
 
-        if (originalUrl.includes('yandex')) {       //если ссылка с яндекса оставляем ее как есть
-            return originalUrl;
-        }
-        else {
             return originalUrl.replace('/upload/', '/upload/q_auto,f_auto/');
-        }
     };
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
