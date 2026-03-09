@@ -4998,7 +4998,7 @@
         "Название":"Изумрудный Порт",
         "Координаты":"-580; 19125",
         "Описание":null,
-        "Авторы":"Kemperovski, Izotect, Lisan1, Gremour, libiDodo, SodaHuis, NeoPlayer, Rfossa, LinLin",
+        "Авторы":"Kemperovsky, Izotect, Lisan1, Gremour, libiDodo, SodaHuis, NeoPlayer, Rfossa, LinLin",
         "Скриншоты":"Ссылка",
         "Дата нахождения":"2025-12-21",
         "isHeader":null,
@@ -7841,5 +7841,27 @@
         "Дата нахождения":"2026-02-13",
         "isHeader":null,
         "color":"FF5050"
+    },
+    {
+        "К-во":"Архив Serglittle",
+        "Название":null,
+        "Координаты":null,
+        "Описание":null,
+        "Авторы":null,
+        "Скриншоты":null,
+        "Дата нахождения":null,
+        "isHeader":"y",
+        "color":null
+    },
+    {
+        "К-во":null,
+        "Название":"Архив Serglittle",
+        "Координаты":"N\/a",
+        "Описание":null,
+        "Авторы":"Serglittle",
+        "Скриншоты":"Ссылка",
+        "Дата нахождения":"2026-03-09",
+        "isHeader":null,
+        "color":"FFC000"
     }
 ]
