@@ -14,6 +14,7 @@
 
 .main-panel {
     display: flex;
+    align-items: center;
 }
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 /* Панель фильтров */
@@ -94,17 +95,18 @@
     margin-right: 5px;
     flex: 1;
 }
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 /* Заголовок сайта */
 
-h1 {
+.page-title {
     color: #333;                          /* тёмно-серый цвет текста (можно любой hex, rgb, или ключевое слово) */
-    margin-bottom: 30px;                  /* отступ снизу (можно в px, em, rem) */
     font-weight: 400;                     /* тонкое начертание (нормальное 400, жирное 700) */
     letter-spacing: 2px;                  /* межбуквенный интервал (можно 0, 2px, -0.5px) */
     text-align: right;
     flex: 1;
 }
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 /* Кнопка "Случайно" */
 
@@ -122,6 +124,38 @@ h1 {
 .random-button:hover {
     background-color: #2980b9;
 }
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Переключатель таблиц */
+
+.mode-switcher {
+    display: flex;
+    gap: 5px;
+    border-radius: 4px;
+    item-align: center;
+    justify-content: right;
+}
+
+.mode-switcher button {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px 5px 0 0;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.mode-switcher button.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.mode-switcher button:not(.active):hover {
+    background: #e0e0e0;
+}
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
                                         /* Основная таблица */
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -442,6 +476,154 @@ h1 {
     }
 }
 
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+                                        /* Таблица книг */
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+/* Таблица */
+.books-table {
+    width: 100%;                          /* занимает всю ширину контейнера (можно фиксированную, например 800px) */
+    border-collapse: collapse;            /* убирает двойные границы между ячейками (separate — с расстоянием) */
+    background-color: white;              /* фон таблицы (можно любой цвет) */
+    font-size: 14px;                      /* размер шрифта (можно rem, em) */
+    min-width: 800px;                     /* минимальная ширина, чтобы таблица не сжималась слишком сильно */
+}
 
+/* Заголовки */
+.books-table th {
+    background-color: #2c3e50;            /* тёмно-синий фон (можно любой) */
+    color: white;                         /* цвет текста */
+    font-weight: 600;                     /* полужирный (400 — нормальный, 700 — жирный) */
+    padding: 12px 15px;                   /* внутренние отступы: сверху/снизу 12px, слева/справа 15px */
+    text-align: center;                   /* выравнивание текста по левому краю (center, right) */
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    white-space: nowrap;                  /* запрет переноса текста (normal — переносить) */
+}
+
+/* Ячейки */
+.books-table td {
+    padding: 10px 15px;                           /* отступы внутри ячеек */
+    border: 1px solid #cbdced;                    /* нижняя граница: толщина, стиль, цвет (можно dashed, dotted) */
+    text-align: left;                             /* выравнивание по левому краю */
+    vertical-align: middle;                       /* выравнивание по верхнему краю (middle, bottom) */
+}
+
+/* Чередование фона строк */
+.books-table tbody tr:nth-child(even) {
+    background-color: #f8f9fa;                /* очень светлый серый для чётных строк (можно любой цвет) */
+}
+
+/* Подсветка строки при наведении */
+.books-table tbody tr:hover {
+    background-color: #e9ecef;                /* более тёмный серый при наведении */
+    transition: background-color 0.3s ease;   /* плавное изменение цвета за 0.2 секунды (можно linear, или убрать) */
+}
+
+/* Стиль для ссылок (если они есть в ячейках) */
+.books-table a {
+    color: #3498db;                           /* синий цвет ссылок */
+    text-decoration: none;                    /* убирает подчёркивание (underline — добавить) */
+}
+
+.books-table a:hover {
+    text-decoration: underline;               /* подчёркивание при наведении */
+}
+
+/* Обработка длинного текста в ячейках */
+.books-table td {
+    max-width: 250px;         /* максимальная ширина ячейки (можно больше или меньше) */
+    word-wrap: break-word;    /* разрешает перенос длинных слов (normal — без переноса) */
+    white-space: normal;      /* обычный перенос текста (nowrap — запретить перенос) */
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Параметры отдельных столбцов */
+
+/* Первый столбец (Название) */
+.books-table td:nth-child(1) {
+    text-align: center;
+}
+
+/* Второй столбец (Автор) */
+.books-table td:nth-child(2) {
+    text-align: center;
+    min-width: 200px;
+}
+
+/* Третий столбец (Описание) */
+.books-table td:nth-child(3) {
+    text-align: center;
+}
+
+/* Четвёртый столбец (Содержимое) */
+.books-table td:nth-child(4) {
+    text-align: center;
+}
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Кнопка "Читать" */
+
+.read-button {
+  background: none;
+  border: 1px solid #27ae60;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #27ae60;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.read-button:hover {
+  background: #27ae60;
+  color: white;
+}
+
+/* Модальное окно для текста книги */
+.book-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.book-modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  width: 90%;
+}
+
+.book-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #333;
+}
+
+.book-modal-close:hover {
+  color: #000;
+}
+
+.book-text {
+  white-space: pre-wrap;
+  font-family: 'Georgia', serif;
+  line-height: 1.6;
+  font-size: 16px;
+}
 

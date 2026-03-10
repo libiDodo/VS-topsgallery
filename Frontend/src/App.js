@@ -17,8 +17,9 @@ import './App.css';                                                             
 function App() {
 
     /* Задаём переменные состояния для загрузки данных */
-    const [topsJSON, setTops] = useState([]);       //переменная, содержащая таблицу TOPS. По умолчанию пустое.
-    const [galleries, setGalleries] = useState({}); //переменная, содержащая таблицу ссылок на изображения. По умолчанию пустое.
+    const [topsJSON, setTops] = useState([]);       //переменная, содержащая таблицу TOPS. По умолчанию пустая.
+    const [galleries, setGalleries] = useState({}); //переменная, содержащая таблицу ссылок на изображения. По умолчанию пустая.
+    const [booksData, setBooksData] = useState([]); //переменная, содержащая таблицу книг. По умолчанию пустая.
     const [loading, setLoading] = useState(true);   //переменная состояния загрузки. По умолчанию загрузка активна.
     const [error, setError] = useState(null);       //переменная состояния ошибки. По умолчанию ошибок нет.
 
@@ -32,11 +33,16 @@ function App() {
             fetch('/api/gallery').then(res => {     //получаем gallery.json
                 if (!res.ok) throw new Error('Ошибка загрузки gallery.json');
                 return res.json();
+            }),
+            fetch('/api/books').then(res => {     //получаем TOPSBooks.json
+                if (!res.ok) throw new Error('Ошибка загрузки TOPSBooks.json');
+                return res.json();
             })
-        ])      //когда оба ответа даны, идём дальше
-        .then(([topsData, galleryData]) => {        //присваивыем переменным полученные значения
+        ])      //когда все ответы даны, идём дальше
+        .then(([topsData, galleryData, booksData]) => {        //присваивыем переменным полученные значения
             setTops(topsData);
             setGalleries(galleryData);
+            setBooksData(booksData);
             setLoading(false);      //загрузка окончена
         })
         .catch(err => {     //обработчик ошибок
@@ -44,6 +50,15 @@ function App() {
             setLoading(false);
         });
     }, []);
+
+    const [mode, setMode] = useState('gallery'); // переключатель 'gallery' или 'books'
+
+/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+    /* Переменные для таблицы книг */
+    const [bookModalContent, setBookModalContent] = useState(null); // переменная для текста книги
+    const [currentBookName, setCurrentBookName] = useState(null); // переменная для названия книги
+    const [isBookModalOpen, setIsBookModalOpen] = useState(false); // открыта ли книга для прочтения
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
@@ -262,184 +277,279 @@ function App() {
             {/* Основная панель над таблицей */}
             <div className="main-panel">
 
-                {/* Панель фильтров */}
-                <div className="filter-panel">
-                    {colorFilters.map(c => (        /* Отрисовываем чекбоксы со значениями цветов из списка в виде ключей */
-                        <label key={c.hex} className="checkbox-label">
-                            {/* Функциональная часть чекбоксов */}
-                            <input
-                                type="checkbox"
-                                checked={selectedColors.has(c.hex)}
-                                onChange={(e) => handleColorChange(c.hex, e.target.checked)}
-                                className="checkbox-input"
-                            />
-                            {/* Визуальная часть чекбоксов */}
-                            <span className="checkbox-custom" style={{ backgroundColor: `#${c.hex}` }} />
-                            <span className="checkbox-text">{c.name}</span>
-                        </label>
-                    ))}
-                    <div>       {/* Чекбокс для городов */}
-                        <label className="checkbox-label">
-                            <input
-                                className="checkbox-input"
-                                type="checkbox"
-                                checked={showSpecial}
-                                onChange={(e) => handleSpecialChange(e.target.checked)}
-                            />
-                            <span className="checkbox-custom" style={{ backgroundColor: '#cccccc' }} />
-                            <span className="checkbox-text"> {SPECIAL_SYMBOL.name} ({SPECIAL_SYMBOL.value})</span>
-                        </label>
+                {/* Панель фильтров (показываем только в режиме gallery) */}
+                {mode === 'gallery' && (
+                    <div className="filter-panel">
+                        {colorFilters.map(c => (        /* Отрисовываем чекбоксы со значениями цветов из списка в виде ключей */
+                            <label key={c.hex} className="checkbox-label">
+                                {/* Функциональная часть чекбоксов */}
+                                <input
+                                    type="checkbox"
+                                    checked={selectedColors.has(c.hex)}
+                                    onChange={(e) => handleColorChange(c.hex, e.target.checked)}
+                                    className="checkbox-input"
+                                />
+                                {/* Визуальная часть чекбоксов */}
+                                <span className="checkbox-custom" style={{ backgroundColor: `#${c.hex}` }} />
+                                <span className="checkbox-text">{c.name}</span>
+                            </label>
+                        ))}
+                        <div>       {/* Чекбокс для городов */}
+                            <label className="checkbox-label">
+                                <input
+                                    className="checkbox-input"
+                                    type="checkbox"
+                                    checked={showSpecial}
+                                    onChange={(e) => handleSpecialChange(e.target.checked)}
+                                />
+                                <span className="checkbox-custom" style={{ backgroundColor: '#cccccc' }} />
+                                <span className="checkbox-text"> {SPECIAL_SYMBOL.name} ({SPECIAL_SYMBOL.value})</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Поисковая строка */}
-                <div className="search-panel">
-                    <input
-                        className="search-input"
-                        type="text"
-                        value={searchInput}
-                        onChange={handleSearchChange}
-                        placeholder="Поиск..."
-                    />
+                {/* Поисковая строка (показываем только в режиме gallery) */}
+                {mode === 'gallery' && (
+                    <div className="search-panel">
+                        <input
+                            className="search-input"
+                            type="text"
+                            value={searchInput}
+                            onChange={handleSearchChange}
+                            placeholder="Поиск..."
+                        />
 
-                    {/* Кнопка "Случайно" */}
-                    <button className="random-button" onClick={openRandomGallery}>
-                        🎲 Случайно
-                    </button>
-                </div>
+                        {/* Кнопка "Случайно" */}
+                        <button className="random-button" onClick={openRandomGallery}>
+                            🎲 Случайно
+                        </button>
+                    </div>
+                )}
 
-                {/* Заголовок */}
-                <h1>TOPS Photoalbum</h1>
+                    {/* Заголовок */}
+                    <h1 className="page-title"> TOPS Photoalbum</h1>
+            </div>
+
+            {/* Переключатель режимов */}
+            <div className="mode-switcher">
+                <button
+                    className={mode === 'gallery' ? 'active' : ''}
+                    onClick={() => setMode('gallery')}
+                >
+                    Галерея
+                </button>
+                <button
+                    className={mode === 'books' ? 'active' : ''}
+                    onClick={() => setMode('books')}
+                >
+                    Книги
+                </button>
             </div>
 
             {/* Таблица */}
             <div className="table-container" >
-                <table className="tops-table">
-                    {/* Шапка таблицы */}
-                    <thead>
-                        <tr>
-                            <th>К-во</th>
-                            <th>Название</th>
-                            <th>Координаты</th>
-                            <th>Описание</th>
-                            <th>Авторы</th>
-                            <th>Скриншоты</th>
-                            <th>Дата нахождения</th>
-                        </tr>
-                    </thead>
+                {mode === 'gallery' ? (
 
-                    {/* Отрисовка строк таблицы */}
-                    <tbody>
-                        {sortedTopsJSON.map((topsList, index) => {
-                            //Строка-заголовок
-                            if (topsList.isHeader) {
-                                // Рендерим строку-заголовок с одной объединённой ячейкой
-                                return (
-                                    <tr key={index} className="section-header">
-                                        <td colSpan={7}>
-                                            {topsList["К-во"]}
-                                        </td>
-                                    </tr>
-                                );
-                            } else {
-                                //задаём id для каждой обычной строки (заменяем запрещённые символы в id)
-                                const rowId = `row-${topsList.Название.replace(/\s+/g, '_')}`;
-                                // Обычная строка с данными
-                                return (
-                                    <tr
-                                        key={index}
-                                        id={rowId}
-                                        className={lastOpenedRow === topsList.Название ? 'highlighted-row' : ''}
-                                    >
-                                        <td style={{ backgroundColor: topsList.color ? `#${topsList.color}` : 'transparent' }}>     {/* Задаём цвет строки в зависимости от качества */}
-                                            {topsList["К-во"]}
-                                        </td>
-                                        <td><HighlightText text={topsList.Название} highlight={searchInput} /></td>
-                                        <td><HighlightText text={topsList.Координаты} highlight={searchInput} /></td>
-                                        <td><HighlightText text={topsList.Описание} highlight={searchInput} /></td>
-                                        <td><HighlightText text={topsList.Авторы} highlight={searchInput} /></td>
+                    /* Таблица баз */
+                    <table className="tops-table">
+                        {/* Шапка таблицы */}
+                        <thead>
+                            <tr>
+                                <th>К-во</th>
+                                <th>Название</th>
+                                <th>Координаты</th>
+                                <th>Описание</th>
+                                <th>Авторы</th>
+                                <th>Скриншоты</th>
+                                <th>Дата нахождения</th>
+                            </tr>
+                        </thead>
 
-                                        {/* Столбец скриншотов */}
-                                        <td>
-                                            {(() => {
-                                                const placeName = topsList.Название;
-                                                const coords = topsList.Координаты;
-                                                const images = galleries[placeName];
-                                                if (!images || images.length === 0) {
-                                                    return <span className="no-photos">Не хватило памяти в облаке</span>;
-                                                };
-                                                return (
-                                                    <button
-                                                        className="gallery-button"
-                                                        onClick={() => openGallery(placeName, coords)}
-                                                        title=""
-                                                    >
-                                                    📷 {images.length}
-                                                    </button>
-                                                );
-                                            })()}
-                                        </td>
+                        {/* Отрисовка строк таблицы */}
+                        <tbody>
+                            {sortedTopsJSON.map((topsList, index) => {
+                                //Строка-заголовок
+                                if (topsList.isHeader) {
+                                    // Рендерим строку-заголовок с одной объединённой ячейкой
+                                    return (
+                                        <tr key={index} className="section-header">
+                                            <td colSpan={7}>
+                                                {topsList["К-во"]}
+                                            </td>
+                                        </tr>
+                                    );
+                                } else {
+                                    //задаём id для каждой обычной строки (заменяем запрещённые символы в id)
+                                    const rowId = `row-${topsList.Название.replace(/\s+/g, '_')}`;
+                                    // Обычная строка с данными
+                                    return (
+                                        <tr
+                                            key={index}
+                                            id={rowId}
+                                            className={lastOpenedRow === topsList.Название ? 'highlighted-row' : ''}
+                                        >
+                                            <td style={{ backgroundColor: topsList.color ? `#${topsList.color}` : 'transparent' }}>     {/* Задаём цвет строки в зависимости от качества */}
+                                                {topsList["К-во"]}
+                                            </td>
+                                            <td><HighlightText text={topsList.Название} highlight={searchInput} /></td>
+                                            <td><HighlightText text={topsList.Координаты} highlight={searchInput} /></td>
+                                            <td><HighlightText text={topsList.Описание} highlight={searchInput} /></td>
+                                            <td><HighlightText text={topsList.Авторы} highlight={searchInput} /></td>
 
-                                        <td><HighlightText text={topsList["Дата нахождения"]} highlight={searchInput} /></td>
-                                    </tr>
-                                );
-                            }
-                        })}
+                                            {/* Столбец скриншотов */}
+                                            <td>
+                                                {(() => {
+                                                    const placeName = topsList.Название;
+                                                    const coords = topsList.Координаты;
+                                                    const images = galleries[placeName];
+                                                    if (!images || images.length === 0) {
+                                                        return <span className="no-photos">Не хватило памяти в облаке</span>;
+                                                    };
+                                                    return (
+                                                        <button
+                                                            className="gallery-button"
+                                                            onClick={() => openGallery(placeName, coords)}
+                                                            title=""
+                                                        >
+                                                        📷 {images.length}
+                                                        </button>
+                                                    );
+                                                })()}
+                                            </td>
 
-                        {/* Панель скриншотов */}
-                        {isModalOpen && (
-                            <div className="modal-overlay" onClick={closeModal}>
-                                <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                                    <button className="modal-close" onClick={closeModal}>×</button>
+                                            <td><HighlightText text={topsList["Дата нахождения"]} highlight={searchInput} /></td>
+                                        </tr>
+                                    );
+                                }
+                            })}
 
-                                    {/* Заголовок панели скриншотов */}
-                                    <h2 className="modal-title">
-                                        {currentPlace.name} | {currentPlace.coords || 'координаты не указаны'}
-                                    </h2>
+                            {/* Панель скриншотов */}
+                            {isModalOpen && (
+                                <div className="modal-overlay" onClick={closeModal}>
+                                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                                        <button className="modal-close" onClick={closeModal}>×</button>
 
-                                    {/* Рендерим изображения */}
-                                    <div className="modal-images">
-                                        {modalImages.map((img, idx) => (
-                                            <img
-                                                key={idx}
-                                                src={getThumbUrl(img)}
-                                                alt={`image-${idx}`}
-                                                className="modal-thumb"
-                                                onClick={() => openFullscreen(modalImages, idx)}
-                                            />
-                                        ))}
+                                        {/* Заголовок панели скриншотов */}
+                                        <h2 className="modal-title">
+                                            {currentPlace.name} | {currentPlace.coords || 'координаты не указаны'}
+                                        </h2>
+
+                                        {/* Рендерим изображения */}
+                                        <div className="modal-images">
+                                            {modalImages.map((img, idx) => (
+                                                <img
+                                                    key={idx}
+                                                    src={getThumbUrl(img)}
+                                                    alt={`image-${idx}`}
+                                                    className="modal-thumb"
+                                                    onClick={() => openFullscreen(modalImages, idx)}
+                                                />
+                                            ))}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        {/* Полноэкранный режим */}
-                        {isFullscreenOpen && (
-                            <div className="fullscreen-overlay" onClick={closeFullscreen}>
-                                <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
-                                    <button className="fullscreen-close" onClick={closeFullscreen}>×</button>
+                            {/* Полноэкранный режим */}
+                            {isFullscreenOpen && (
+                                <div className="fullscreen-overlay" onClick={closeFullscreen}>
+                                    <div className="fullscreen-content" onClick={(e) => e.stopPropagation()}>
+                                        <button className="fullscreen-close" onClick={closeFullscreen}>×</button>
 
-                                    <button className="fullscreen-nav fullscreen-prev" onClick={prevImage}>‹</button>
+                                        <button className="fullscreen-nav fullscreen-prev" onClick={prevImage}>‹</button>
 
-                                    <img
-                                        src={getFullscreenUrl(fullscreenImages[fullscreenIndex])}
-                                        alt="fullscreen"
-                                        className="fullscreen-image"
-                                    />
+                                        <img
+                                            src={getFullscreenUrl(fullscreenImages[fullscreenIndex])}
+                                            alt="fullscreen"
+                                            className="fullscreen-image"
+                                        />
 
-                                    <button className="fullscreen-nav fullscreen-next" onClick={nextImage}>›</button>
+                                        <button className="fullscreen-nav fullscreen-next" onClick={nextImage}>›</button>
 
-                                    <div className="fullscreen-counter">
-                                        {fullscreenIndex + 1} / {fullscreenImages.length}
+                                        <div className="fullscreen-counter">
+                                            {fullscreenIndex + 1} / {fullscreenImages.length}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
-                        <p>Всего записей: {sortedTopsJSON.filter(item => item.isHeader === null).length}</p>
+                            <p>Всего записей: {sortedTopsJSON.filter(item => item.isHeader === null).length}</p>
 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+
+                ) : (
+
+                    // Таблица книг
+                    <table className="books-table">
+                        {/* Шапка таблицы */}
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Автор</th>
+                                <th>Описание</th>
+                                <th>Содержимое</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {/* Отрисовка строк таблицы */}
+                            {booksData.map((bookList, index) => {
+                                /* Если строка-заголовок... */
+                                if (bookList.isHeader) {
+                                    // Рендерим строку-заголовок с одной объединённой ячейкой
+                                    return (
+                                        <tr key={index} className="book-header">
+                                            <td colSpan={7}>
+                                                {bookList.Название}
+                                            </td>
+                                        </tr>
+                                    );
+                                } else {
+                                    /* Отрисовываем обычные строки */
+                                    return (
+                                        <tr key={index}>
+                                            <td>{bookList.Название}</td>
+                                            <td>{bookList.Автор}</td>
+                                            <td>{bookList.Описание}</td>
+                                            <td>
+                                                <button
+                                                    className="read-button"
+                                                    onClick={() => {
+                                                        setCurrentBookName(bookList.Название);
+                                                        setBookModalContent(bookList.Содержимое);
+                                                        setIsBookModalOpen(true);
+                                                    }}
+                                                >
+                                                    📖 Читать
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                }
+                            })}
+
+                            {/* Окно с содержимым книги */}
+                            {isBookModalOpen && (
+                                <div className="book-modal-overlay" onClick={() => setIsBookModalOpen(false)}>
+                                    <div className="book-modal-content" onClick={(e) => e.stopPropagation()}>
+                                        <button className="book-modal-close" onClick={() => setIsBookModalOpen(false)}>×</button>
+
+                                        {/* Название книги */}
+                                        <h2 className="book-title">
+                                            {currentBookName}
+                                        </h2>
+
+                                        <div className="book-text">
+                                            {bookModalContent}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </tbody>
+                    </table>
+                )}
             </div>
         </div>
     );
