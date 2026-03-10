@@ -11,7 +11,7 @@ json_file = 'Backend/Data/TOPS.json'
 # -------------------------------------------------
 
 # Чтение данных через pandas (для основного содержимого)
-df = pd.read_excel(excel_file)
+df = pd.read_excel(excel_file, sheet_name=0)
 
 # Загружаем книгу через openpyxl для доступа к стилям
 wb = load_workbook(excel_file, data_only=True)
