@@ -537,6 +537,15 @@
     white-space: normal;      /* обычный перенос текста (nowrap — запретить перенос) */
 }
 
+.book-header td {
+    text-align: center;
+    font-weight: 700;
+    background-color: #e0ebfe;
+    padding: 12px;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 /* Параметры отдельных столбцов */
 
