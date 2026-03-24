@@ -126,7 +126,6 @@ function App() {
         setFullscreenImages(images);        //задаём значение переменной для полноэкранных изображений
         setFullscreenIndex(index);          //задаём индекс
         setIsFullscreenOpen(true);          //полноэкранный режим открыт
-        document.body.style.overflow = 'hidden';        // блокируем прокрутку страницы
     };
 
     /* Переключение на следующее изображение */
@@ -143,7 +142,6 @@ function App() {
     const closeFullscreen = useCallback(() => {
         setIsFullscreenOpen(false);     //полный экран теперь закрыт
         setFullscreenImages(null);      //очищаем список изображений
-        document.body.style.overflow = 'unset';     //разблокируем прокрутку
     }, []);
 
     /* Обработка нажатий клавиш */
@@ -199,18 +197,31 @@ function App() {
 
     /* Случайно выбираем строку */
     const openRandomGallery = () => {
-        if (placesWithImages.length === 0) return;      //если кандидатов нет выходим из фуункции
-        const randomIndex = Math.floor(Math.random() * placesWithImages.length);        //получаем случайный индекс строки
-        const randomPlace = placesWithImages[randomIndex];      //находим эту строку по индексу
 
-        /* Плавная прокрутка к строке */
-        const rowId = `row-${randomPlace.Название.replace(/\s+/g, '_')}`;       //узнаём id строки
-        const element = document.getElementById(rowId);     //находим строку по id
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'center' });        //переходим к ней
-        }
+        //Закрываем все модальные окна(они блокируют прокрутку до строки)
+        if (isModalOpen) closeModal();
+        if (isFullscreenOpen) closeFullscreen();
+        if (isBookModalOpen) setIsBookModalOpen(false);
 
-        openGallery(randomPlace.Название, randomPlace.Координаты);              //открываем галерею
+        if (placesWithImages.length === 0) return;
+
+        const randomIndex = Math.floor(Math.random() * placesWithImages.length);
+        const randomPlace = placesWithImages[randomIndex];
+
+        //двойной requestAnimationFrame для обновления стилей и расположения элементов
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                const rowId = `row-${randomPlace.Название.replace(/\s+/g, '_')}`;
+                const element = document.getElementById(rowId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                // Ждём окончания анимации, затем открываем галерею
+                setTimeout(() => {
+                    openGallery(randomPlace.Название, randomPlace.Координаты);
+                }, 200);
+            });
+        });
     };
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
@@ -261,6 +272,15 @@ function App() {
         searchData(filteredData, searchInput), [filteredData, searchInput]);
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+
+    //Блокируем прокрутку при открытых модальных окнах
+    useEffect(() => {
+        const isAnyModalOpen = isModalOpen || isBookModalOpen || isFullscreenOpen;
+        document.body.style.overflow = isAnyModalOpen ? 'hidden' : 'unset';
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isModalOpen, isBookModalOpen, isFullscreenOpen]);
 
     // Сортируем данные в 3 раз с помощью модуля tablesorting.js
     const sortedTopsJSON = useMemo(() =>
